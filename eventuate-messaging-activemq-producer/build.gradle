@@ -1,0 +1,10 @@
+apply plugin: PublicModulePlugin
+
+dependencies {
+    compile project (":eventuate-messaging-activemq-common")
+
+    compile "io.eventuate.common.messaging:eventuate-common-messaging:$eventuateCommonMessagingVersion"
+
+    compile "org.apache.activemq:activemq-core:5.7.0"
+}
+
