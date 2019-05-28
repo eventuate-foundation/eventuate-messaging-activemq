@@ -29,13 +29,18 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
 
   private AtomicBoolean runFlag = new AtomicBoolean(true);
 
-  public MessageConsumerActiveMQImpl(String url) {
-    this(url, Collections.emptyMap());
+  public MessageConsumerActiveMQImpl(String url,
+                                     Optional<String> user,
+                                     Optional<String> password) {
+    this(url, Collections.emptyMap(), user, password);
   }
 
-  public MessageConsumerActiveMQImpl(String url, Map<String, ChannelType> messageModes) {
+  public MessageConsumerActiveMQImpl(String url,
+                                     Map<String, ChannelType> messageModes,
+                                     Optional<String> user,
+                                     Optional<String> password) {
     this.messageModes = messageModes;
-    connectionFactory = new ActiveMQConnectionFactory(url);
+    connectionFactory = createActiveMQConnectionFactory(url, user, password);
     try {
       connection = connectionFactory.createConnection();
       connection.setExceptionListener(e -> logger.error(e.getMessage(), e));
@@ -54,7 +59,7 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
         ChannelType mode = messageModes.getOrDefault(channel, ChannelType.TOPIC);
 
         String destinationName = mode == ChannelType.TOPIC ?
-                String.format("Consumer.%s.VirtualTopic.%s", subscriberId, channel) :
+                String.format("Consumer.%s.VirtualTopic.%s", formatSubscriberId(subscriberId), channel) :
                 channel;
 
         Destination destination = session.createQueue(destinationName);
@@ -79,6 +84,17 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
       logger.error(e.getMessage(), e);
       throw new RuntimeException(e);
     }
+  }
+
+  private String formatSubscriberId(String subscriberId) {
+    return subscriberId.replace(".", "::");
+  }
+
+  private ActiveMQConnectionFactory createActiveMQConnectionFactory(String url, Optional<String> user, Optional<String> password) {
+    return user
+            .flatMap(usr -> password.flatMap(pass ->
+                    Optional.of(new ActiveMQConnectionFactory(usr, pass, url))))
+            .orElseGet(() -> new ActiveMQConnectionFactory(url));
   }
 
   private Void process(String subscriberId,

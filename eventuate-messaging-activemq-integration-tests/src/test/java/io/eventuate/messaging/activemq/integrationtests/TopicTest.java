@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @RunWith(SpringRunner.class)
@@ -99,5 +100,24 @@ public class TopicTest {
     }
 
     Eventually.eventually(() -> Assert.assertEquals(messages * consumers, concurrentLinkedQueue.size()));
+  }
+
+  @Test
+  public void testSubscriberWithPeriods() {
+
+    ConcurrentLinkedQueue<String> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+
+    String topic = "io.eventuate.SomeClass" + uniquePostfix;
+    String key = "some.key" + uniquePostfix;
+    String payload = "some.data" + uniquePostfix;
+    String subscriberId = "io.eventuate.Subscriber" + uniquePostfix;
+
+    messageConsumerActiveMQ.subscribe(subscriberId,
+            ImmutableSet.of(topic),
+            message -> concurrentLinkedQueue.add(message.getPayload()));
+
+    eventuateActiveMQProducer.send(topic, key, payload);
+
+    Eventually.eventually(() -> Assert.assertEquals(1, concurrentLinkedQueue.size()));
   }
 }
