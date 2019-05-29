@@ -1,7 +1,7 @@
 package io.eventuate.messaging.activemq.producer;
 
-import io.eventuate.common.messaging.CommonMessageConsumer;
 import io.eventuate.messaging.activemq.common.ChannelType;
+import io.eventuate.messaging.partition.management.CommonMessageConsumer;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

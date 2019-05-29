@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Configuration
 @Import(EventuateActiveMQCommonConfiguration.class)
-public class TramConsumerActiveMQConfiguration {
+public class MessageConsumerActiveMQConfiguration {
 
   @Bean
   public MessageConsumerActiveMQImpl messageConsumer(EventuateActiveMQConfigurationProperties eventuateActiveMQConfigurationProperties) {
