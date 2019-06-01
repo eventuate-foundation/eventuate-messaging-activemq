@@ -1,5 +1,5 @@
 activemq:
-  image: test-eventuate-activemq
+  image: eventuateio/eventuate-activemq:0.1.0.RELEASE
   ports:
     - 8161:8161
     - 61616:61616
