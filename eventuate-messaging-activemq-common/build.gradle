@@ -1,0 +1,8 @@
+apply plugin: PublicModulePlugin
+
+dependencies {
+    compile "io.eventuate.messaging.partition.management:eventuate-messaging-partition-management:$eventuateMessagingPartitionManagementVersion"
+    compile "org.apache.activemq:activemq-core:5.7.0"
+}
+
+

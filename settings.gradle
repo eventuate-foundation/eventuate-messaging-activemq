@@ -1,0 +1,4 @@
+include 'eventuate-messaging-activemq-common'
+include 'eventuate-messaging-activemq-consumer'
+include 'eventuate-messaging-activemq-integration-tests'
+include 'eventuate-messaging-activemq-producer'
