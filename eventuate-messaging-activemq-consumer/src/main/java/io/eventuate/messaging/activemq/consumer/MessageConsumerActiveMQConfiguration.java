@@ -13,7 +13,7 @@ import java.util.Optional;
 public class MessageConsumerActiveMQConfiguration {
 
   @Bean
-  public MessageConsumerActiveMQImpl messageConsumer(EventuateActiveMQConfigurationProperties eventuateActiveMQConfigurationProperties) {
+  public MessageConsumerActiveMQImpl messageConsumerActiveMQ(EventuateActiveMQConfigurationProperties eventuateActiveMQConfigurationProperties) {
     return new MessageConsumerActiveMQImpl(eventuateActiveMQConfigurationProperties.getUrl(),
             Optional.ofNullable(eventuateActiveMQConfigurationProperties.getUser()),
             Optional.ofNullable(eventuateActiveMQConfigurationProperties.getPassword()));
