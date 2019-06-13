@@ -2,13 +2,10 @@ package io.eventuate.messaging.activemq.integrationtests;
 
 import com.google.common.collect.ImmutableSet;
 import io.eventuate.messaging.activemq.common.ChannelType;
-import io.eventuate.messaging.activemq.consumer.MessageConsumerActiveMQImpl;
-import io.eventuate.messaging.activemq.producer.EventuateActiveMQProducer;
 import io.eventuate.util.test.async.Eventually;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -17,13 +14,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TopicTest.Config.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD) //to generate unique topic name for each test
-public class TopicTest {
+public class TopicTest extends AbstractIntegrationTest {
 
   @Configuration
   @Import(CommonQueueTopicTestConfiguration.class)
@@ -34,15 +30,6 @@ public class TopicTest {
       return ChannelType.TOPIC;
     }
   }
-
-  @Autowired
-  private MessageConsumerActiveMQImpl messageConsumerActiveMQ;
-
-  @Autowired
-  private EventuateActiveMQProducer eventuateActiveMQProducer;
-
-  @Autowired
-  private String uniquePostfix;
 
   @Test
   public void testSeveralSubscribersForDefinedTopic() {
