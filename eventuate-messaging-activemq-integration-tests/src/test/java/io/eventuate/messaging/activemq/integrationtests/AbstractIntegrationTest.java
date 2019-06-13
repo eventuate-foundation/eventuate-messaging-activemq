@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class AbstractIntegrationTest {
+public abstract class AbstractIntegrationTest {
 
   @Autowired
   protected MessageConsumerActiveMQImpl messageConsumerActiveMQ;
