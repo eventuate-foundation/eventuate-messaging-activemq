@@ -71,14 +71,15 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
         processingFutures.add(CompletableFuture.supplyAsync(() -> process(subscriberId, consumer, handler)));
       }
 
-      return new Subscription(() ->
+      return new Subscription(() -> {
         subscriptionConsumers.forEach(consumer -> {
           try {
             consumer.close();
           } catch (JMSException e) {
             throw new RuntimeException(e);
           }
-      }));
+        });
+      });
 
     } catch (JMSException e) {
       logger.error(e.getMessage(), e);
@@ -117,9 +118,10 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
         } catch (Throwable t) {
           logger.trace("Got exception {} {}", subscriberId, activeMQMessage);
           logger.trace("Got exception ", t);
-        } finally {
-          acknowledge(textMessage);
+          throw new RuntimeException(t);
         }
+
+        acknowledge(textMessage);
 
       } catch (JMSException e) {
         logger.error(e.getMessage(), e);

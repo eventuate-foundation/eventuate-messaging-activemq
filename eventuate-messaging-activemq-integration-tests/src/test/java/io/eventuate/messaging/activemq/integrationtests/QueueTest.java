@@ -2,13 +2,10 @@ package io.eventuate.messaging.activemq.integrationtests;
 
 import com.google.common.collect.ImmutableSet;
 import io.eventuate.messaging.activemq.common.ChannelType;
-import io.eventuate.messaging.activemq.consumer.MessageConsumerActiveMQImpl;
-import io.eventuate.messaging.activemq.producer.EventuateActiveMQProducer;
 import io.eventuate.util.test.async.Eventually;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = QueueTest.Config.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD) //to generate unique topic name for each test
-public class QueueTest {
+public class QueueTest extends AbstractIntegrationTest {
 
   @Configuration
   @Import(CommonQueueTopicTestConfiguration.class)
@@ -33,15 +30,6 @@ public class QueueTest {
       return ChannelType.QUEUE;
     }
   }
-
-  @Autowired
-  private MessageConsumerActiveMQImpl messageConsumerActiveMQ;
-
-  @Autowired
-  private EventuateActiveMQProducer eventuateActiveMQProducer;
-
-  @Autowired
-  private String uniquePostfix;
 
   @Test
   public void testSeveralSubscribersWithPersistence() {
