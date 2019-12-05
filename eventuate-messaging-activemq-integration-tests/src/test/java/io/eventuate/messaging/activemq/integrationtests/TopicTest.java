@@ -1,6 +1,5 @@
 package io.eventuate.messaging.activemq.integrationtests;
 
-import com.google.common.collect.ImmutableSet;
 import io.eventuate.messaging.activemq.common.ChannelType;
 import io.eventuate.util.test.async.Eventually;
 import org.junit.Assert;
@@ -14,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @RunWith(SpringRunner.class)
@@ -54,7 +54,7 @@ public class TopicTest extends AbstractIntegrationTest {
     ConcurrentLinkedQueue<Integer> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
     for (int i = 0; i < consumers; i ++) {
-      messageConsumerActiveMQ.subscribe("subscriber", ImmutableSet.of(destination), message ->
+      messageConsumerActiveMQ.subscribe("subscriber", Collections.singleton(destination), message ->
               concurrentLinkedQueue.add(Integer.parseInt(message.getPayload())));
     }
 
@@ -78,7 +78,7 @@ public class TopicTest extends AbstractIntegrationTest {
     ConcurrentLinkedQueue<Integer> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
     for (int i = 0; i < consumers; i ++) {
-      messageConsumerActiveMQ.subscribe("subscriber" + i, ImmutableSet.of(destination), message ->
+      messageConsumerActiveMQ.subscribe("subscriber" + i, Collections.singleton(destination), message ->
               concurrentLinkedQueue.add(Integer.parseInt(message.getPayload())));
     }
 
@@ -100,7 +100,7 @@ public class TopicTest extends AbstractIntegrationTest {
     String subscriberId = "io.eventuate.Subscriber" + uniquePostfix;
 
     messageConsumerActiveMQ.subscribe(subscriberId,
-            ImmutableSet.of(topic),
+            Collections.singleton(topic),
             message -> concurrentLinkedQueue.add(message.getPayload()));
 
     eventuateActiveMQProducer.send(topic, key, payload);

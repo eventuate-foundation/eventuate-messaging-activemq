@@ -1,6 +1,5 @@
 package io.eventuate.messaging.activemq.integrationtests;
 
-import com.google.common.collect.ImmutableSet;
 import io.eventuate.messaging.activemq.consumer.MessageConsumerActiveMQImpl;
 import io.eventuate.messaging.activemq.producer.EventuateActiveMQProducer;
 import io.eventuate.util.test.async.Eventually;
@@ -8,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractIntegrationTest {
@@ -31,7 +31,7 @@ public abstract class AbstractIntegrationTest {
 
     AtomicInteger exceptions = new AtomicInteger(0);
 
-    messageConsumerActiveMQ.subscribe(subscriber, ImmutableSet.of(destination), message -> {
+    messageConsumerActiveMQ.subscribe(subscriber, Collections.singleton(destination), message -> {
       try {
         throw new RuntimeException("Test");
       } finally {
