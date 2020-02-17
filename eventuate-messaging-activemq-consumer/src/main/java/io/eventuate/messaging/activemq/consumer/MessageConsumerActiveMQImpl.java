@@ -42,18 +42,23 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
     this.messageModes = messageModes;
     connectionFactory = createActiveMQConnectionFactory(url, user, password);
     try {
+      logger.info("Creating connection");
       connection = connectionFactory.createConnection();
       connection.setExceptionListener(e -> logger.error(e.getMessage(), e));
+      logger.info("Starting connection");
       connection.start();
+      logger.info("Creating session");
       session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      logger.info("Created session");
     } catch (JMSException e) {
-      logger.error(e.getMessage(), e);
+      logger.error("Consumer initialization failed", e);
       throw new RuntimeException(e);
     }
   }
 
   public Subscription subscribe(String subscriberId, Set<String> channels, ActiveMQMessageHandler handler) {
     try {
+      logger.info("Subscribing: subscriberId: {}, channels: {}", subscriberId, channels);
       List<javax.jms.MessageConsumer> subscriptionConsumers = new ArrayList<>();
       for (String channel : channels) {
         ChannelType mode = messageModes.getOrDefault(channel, ChannelType.TOPIC);
@@ -62,27 +67,33 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
                 String.format("Consumer.%s.VirtualTopic.%s", formatSubscriberId(subscriberId), channel) :
                 channel;
 
+        logger.info("Creating queue: {}", destinationName);
         Destination destination = session.createQueue(destinationName);
 
+        logger.info("Creating consumer: {}", destination);
         javax.jms.MessageConsumer consumer = session.createConsumer(destination);
         consumers.add(consumer);
         subscriptionConsumers.add(consumer);
 
         processingFutures.add(CompletableFuture.supplyAsync(() -> process(subscriberId, consumer, handler)));
+        logger.info("Subscribed: subscriberId: {}, channels: {}", subscriberId, channels);
       }
 
       return new Subscription(() -> {
+        logger.info("closing consumers");
         subscriptionConsumers.forEach(consumer -> {
           try {
             consumer.close();
           } catch (JMSException e) {
+            logger.error("closing consumer failed", e);
             throw new RuntimeException(e);
           }
         });
+        logger.info("closed consumers");
       });
 
     } catch (JMSException e) {
-      logger.error(e.getMessage(), e);
+      logger.error("Subscription failed", e);
       throw new RuntimeException(e);
     }
   }
@@ -101,6 +112,7 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
   private Void process(String subscriberId,
                        javax.jms.MessageConsumer consumer,
                        ActiveMQMessageHandler handler) {
+    logger.info("starting processing");
     while (runFlag.get()) {
       try {
         javax.jms.Message message = consumer.receive(100);
@@ -124,14 +136,17 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
         acknowledge(textMessage);
 
       } catch (JMSException e) {
-        logger.error(e.getMessage(), e);
+        logger.error("processing message failed", e);
       }
     }
+    logger.info("processing finished");
 
     try {
+      logger.info("closing consumer");
       consumer.close();
+      logger.info("closed consumer");
     } catch (JMSException e) {
-      logger.error(e.getMessage(), e);
+      logger.error("closing consumer failed", e);
     }
 
     return null;
@@ -141,7 +156,7 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
     try {
       textMessage.acknowledge();
     } catch (JMSException e) {
-      logger.error(e.getMessage(), e);
+      logger.error("message acknowledgement failed", e);
     }
   }
 
@@ -152,16 +167,18 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
       try {
         f.get();
       } catch (InterruptedException | ExecutionException e) {
-        logger.error(e.getMessage(), e);
+        logger.error("Getting data from future failed", e);
       }
     });
 
     try {
+      logger.info("closing session and connection");
       session.close();
       connection.close();
     } catch (JMSException e) {
-      logger.error(e.getMessage(), e);
+      logger.error("closing session/connection failed", e);
     }
+    logger.info("closed session and connection");
   }
 
   public String getId() {
