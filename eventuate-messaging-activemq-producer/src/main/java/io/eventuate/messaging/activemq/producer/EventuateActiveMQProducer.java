@@ -31,12 +31,16 @@ public class EventuateActiveMQProducer implements CommonMessageConsumer {
 
     ActiveMQConnectionFactory connectionFactory = createActiveMQConnectionFactory(url, user, password);
     try {
+      logger.info("Creating connection");
       connection = connectionFactory.createConnection();
       connection.setExceptionListener(e -> logger.error(e.getMessage(), e));
+      logger.info("Starting connection");
       connection.start();
+      logger.info("Creating session");
       session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      logger.info("Created session");
     } catch (JMSException e) {
-      logger.error(e.getMessage(), e);
+      logger.error("Producer initialization failed", e);
       throw new RuntimeException(e);
     }
   }
@@ -58,13 +62,13 @@ public class EventuateActiveMQProducer implements CommonMessageConsumer {
       producer.send(message);
       producer.close();
     } catch (JMSException e) {
-      logger.error(e.getMessage(), e);
+      logger.error("Sending failed", e);
     } finally {
       if (producer != null) {
         try {
           producer.close();
         } catch (JMSException e) {
-          logger.error(e.getMessage(), e);
+          logger.error("closing producer failed", e);
         }
       }
     }
@@ -83,9 +87,12 @@ public class EventuateActiveMQProducer implements CommonMessageConsumer {
   @Override
   public void close() {
     try {
+      logger.info("closing connection/session");
       connection.close();
       session.close();
+      logger.info("closed connection/session");
     } catch (JMSException e) {
+      logger.info("closing connection/session failed");
       logger.error(e.getMessage(), e);
     }
   }
