@@ -6,7 +6,9 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: eventuate-messaging-activemq-{{ checksum "gradle.properties" }}
+          keys:
+            - eventuate-messaging-activemq-{{ checksum "gradle.properties" }}
+            - eventuate-messaging-activemq-
       - run: TERM=dumb ./gradlew testClasses
       - save_cache:
           paths:
