@@ -1,0 +1,12 @@
+apply plugin: PrivateModulePlugin
+
+dependencies {
+    compile project(":eventuate-messaging-activemq-spring-consumer")
+    compile project(":eventuate-messaging-activemq-spring-producer")
+    testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    compile "io.eventuate.util:eventuate-util-test:$eventuateUtilVersion"
+}
+
+test {
+    forkEvery 1
+}
