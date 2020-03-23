@@ -1,4 +1,4 @@
-include 'eventuate-messaging-activemq-common'
-include 'eventuate-messaging-activemq-consumer'
-include 'eventuate-messaging-activemq-integration-tests'
-include 'eventuate-messaging-activemq-producer'
+include 'eventuate-messaging-activemq-spring-common'
+include 'eventuate-messaging-activemq-spring-consumer'
+include 'eventuate-messaging-activemq-spring-integration-tests'
+include 'eventuate-messaging-activemq-spring-producer'
