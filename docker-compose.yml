@@ -1,8 +1,11 @@
-activemq:
-  build: ./activemq
-  ports:
-    - 8161:8161
-    - 61616:61616
-    - 61613:61613
-    - 1883:1883
-    - 61614:61614
+version: '3'
+services:
+  activemq:
+    build: ./activemq
+    image: eventuateio/eventuate-activemq:DOCKER_IMAGE_TAG
+    ports:
+      - 8161:8161
+      - 61616:61616
+      - 61613:61613
+      - 1883:1883
+      - 61614:61614
