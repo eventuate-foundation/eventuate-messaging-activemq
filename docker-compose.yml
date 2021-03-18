@@ -2,7 +2,7 @@ version: '3'
 services:
   activemq:
     build: ./activemq
-    image: eventuateio/eventuate-activemq:DOCKER_IMAGE_TAG
+    image: eventuateio/eventuate-activemq:$DOCKER_IMAGE_TAG
     ports:
       - 8161:8161
       - 61616:61616
