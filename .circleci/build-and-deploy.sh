@@ -1,4 +1,4 @@
 #! /bin/bash -e
 
-./gradlew build
+./build-and-test-all.sh
 ./deploy-artifacts.sh
