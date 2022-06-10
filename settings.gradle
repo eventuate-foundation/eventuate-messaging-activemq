@@ -1,3 +1,5 @@
+rootProject.name="eventuate-messaging-activemq"
+
 include 'eventuate-messaging-activemq-spring-common'
 include 'eventuate-messaging-activemq-spring-consumer'
 include 'eventuate-messaging-activemq-spring-integration-tests'
