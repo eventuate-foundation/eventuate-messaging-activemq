@@ -1,6 +1,7 @@
 package io.eventuate.messaging.activemq.spring.integrationtests;
 
 import io.eventuate.messaging.activemq.spring.common.ChannelType;
+import io.eventuate.messaging.activemq.spring.consumer.Subscription;
 import io.eventuate.util.test.async.Eventually;
 import org.junit.Assert;
 import org.junit.Test;
@@ -87,6 +88,29 @@ public class TopicTest extends AbstractIntegrationTest {
     }
 
     Eventually.eventually(() -> Assert.assertEquals(messages * consumers, concurrentLinkedQueue.size()));
+  }
+
+  @Test
+  public void testCloseSubscriptionAndResubscribe() {
+    String subscriberId = "subscriber1";
+    String destination = "destination" + uniquePostfix;
+
+    ConcurrentLinkedQueue<Integer> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+    Subscription subscription = messageConsumerActiveMQ.subscribe(subscriberId, Collections.singleton(destination), message ->
+            concurrentLinkedQueue.add(Integer.parseInt(message.getPayload())));
+    eventuateActiveMQProducer.send(destination, "key", String.valueOf(1));
+    Eventually.eventually(() -> Assert.assertEquals(1, concurrentLinkedQueue.size()));
+
+    subscription.close();
+    eventuateActiveMQProducer.send(destination, "key", String.valueOf(1));
+    Eventually.eventually(() -> Assert.assertEquals(1, concurrentLinkedQueue.size()));
+
+    messageConsumerActiveMQ.subscribe(subscriberId, Collections.singleton(destination), message ->
+            concurrentLinkedQueue.add(Integer.parseInt(message.getPayload())));
+    Eventually.eventually(() -> Assert.assertEquals(2, concurrentLinkedQueue.size()));
+
+    eventuateActiveMQProducer.send(destination, "key", String.valueOf(1));
+    Eventually.eventually(() -> Assert.assertEquals(3, concurrentLinkedQueue.size()));
   }
 
   @Test
