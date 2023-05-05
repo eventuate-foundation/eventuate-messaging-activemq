@@ -23,11 +23,8 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
 
   private Connection connection;
   private Session session;
-  private List<javax.jms.MessageConsumer> consumers = new ArrayList<>();
-  private List<Future<Void>> processingFutures = new ArrayList<>();
+  private List<Subscription> subscriptions = new ArrayList<>();
   private Map<String, ChannelType> messageModes;
-
-  private AtomicBoolean runFlag = new AtomicBoolean(true);
 
   public MessageConsumerActiveMQImpl(String url,
                                      Optional<String> user,
@@ -59,7 +56,8 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
   public Subscription subscribe(String subscriberId, Set<String> channels, ActiveMQMessageHandler handler) {
     try {
       logger.info("Subscribing: subscriberId: {}, channels: {}", subscriberId, channels);
-      List<javax.jms.MessageConsumer> subscriptionConsumers = new ArrayList<>();
+      List<Future<Void>> processingFutures = new ArrayList<>();
+      AtomicBoolean runFlag = new AtomicBoolean(true);
       for (String channel : channels) {
         ChannelType mode = messageModes.getOrDefault(channel, ChannelType.TOPIC);
 
@@ -72,26 +70,28 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
 
         logger.info("Creating consumer: {}", destination);
         javax.jms.MessageConsumer consumer = session.createConsumer(destination);
-        consumers.add(consumer);
-        subscriptionConsumers.add(consumer);
 
-        processingFutures.add(CompletableFuture.supplyAsync(() -> process(subscriberId, consumer, handler)));
+        processingFutures.add(CompletableFuture.supplyAsync(() -> process(runFlag, subscriberId, consumer, handler)));
         logger.info("Subscribed: subscriberId: {}, channels: {}", subscriberId, channels);
       }
 
-      return new Subscription(() -> {
-        logger.info("closing consumers");
-        subscriptionConsumers.forEach(consumer -> {
+      Subscription subscription = new Subscription(() -> {
+        if (!runFlag.get()) {
+          return;
+        }
+
+        runFlag.set(false);
+
+        processingFutures.forEach(f -> {
           try {
-            consumer.close();
-          } catch (JMSException e) {
-            logger.error("closing consumer failed", e);
-            throw new RuntimeException(e);
+            f.get();
+          } catch (InterruptedException | ExecutionException e) {
+            logger.error("Getting data from future failed", e);
           }
         });
-        logger.info("closed consumers");
       });
-
+      this.subscriptions.add(subscription);
+      return subscription;
     } catch (JMSException e) {
       logger.error("Subscription failed", e);
       throw new RuntimeException(e);
@@ -109,7 +109,7 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
             .orElseGet(() -> new ActiveMQConnectionFactory(url));
   }
 
-  private Void process(String subscriberId,
+  private Void process(AtomicBoolean runFlag, String subscriberId,
                        javax.jms.MessageConsumer consumer,
                        ActiveMQMessageHandler handler) {
     logger.info("starting processing");
@@ -161,15 +161,9 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
   }
 
   public void close() {
-    runFlag.set(false);
-
-    processingFutures.forEach(f -> {
-      try {
-        f.get();
-      } catch (InterruptedException | ExecutionException e) {
-        logger.error("Getting data from future failed", e);
-      }
-    });
+    logger.info("closing subscriptions");
+    this.subscriptions.forEach(Subscription::close);
+    logger.info("closed subscriptions");
 
     try {
       logger.info("closing session and connection");
