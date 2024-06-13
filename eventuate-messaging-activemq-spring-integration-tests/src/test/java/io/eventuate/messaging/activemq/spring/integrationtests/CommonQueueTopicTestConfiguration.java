@@ -27,9 +27,9 @@ public class CommonQueueTopicTestConfiguration {
   }
 
   @Bean
-  public MessageConsumerActiveMQImpl messageConsumerKafka(EventuateActiveMQConfigurationProperties eventuateActiveMQConfigurationProperties,
-                                                          @Qualifier("uniquePostfix") String uniquePostfix,
-                                                          @Qualifier("testChannelType") ChannelType channelType) {
+  public MessageConsumerActiveMQImpl activeMQMessageConsumer(EventuateActiveMQConfigurationProperties eventuateActiveMQConfigurationProperties,
+                                                             @Qualifier("uniquePostfix") String uniquePostfix,
+                                                             @Qualifier("testChannelType") ChannelType channelType) {
     return new MessageConsumerActiveMQImpl(eventuateActiveMQConfigurationProperties.getUrl(),
             Collections.singletonMap("destination" + uniquePostfix, channelType),
             Optional.ofNullable(eventuateActiveMQConfigurationProperties.getUser()),
