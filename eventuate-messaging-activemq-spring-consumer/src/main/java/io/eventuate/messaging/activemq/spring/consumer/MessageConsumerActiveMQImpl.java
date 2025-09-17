@@ -6,7 +6,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.*;
+import jakarta.jms.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -23,7 +23,7 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
 
   private Connection connection;
   private Session session;
-  private List<javax.jms.MessageConsumer> consumers = new ArrayList<>();
+  private List<jakarta.jms.MessageConsumer> consumers = new ArrayList<>();
   private List<Future<Void>> processingFutures = new ArrayList<>();
   private Map<String, ChannelType> messageModes;
 
@@ -59,19 +59,19 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
   public Subscription subscribe(String subscriberId, Set<String> channels, ActiveMQMessageHandler handler) {
     try {
       logger.info("Subscribing: subscriberId: {}, channels: {}", subscriberId, channels);
-      List<javax.jms.MessageConsumer> subscriptionConsumers = new ArrayList<>();
+      List<jakarta.jms.MessageConsumer> subscriptionConsumers = new ArrayList<>();
       for (String channel : channels) {
         ChannelType mode = messageModes.getOrDefault(channel, ChannelType.TOPIC);
 
         String destinationName = mode == ChannelType.TOPIC ?
-                String.format("Consumer.%s.VirtualTopic.%s", formatSubscriberId(subscriberId), channel) :
+                "Consumer.%s.VirtualTopic.%s".formatted(formatSubscriberId(subscriberId), channel) :
                 channel;
 
         logger.info("Creating queue: {}", destinationName);
         Destination destination = session.createQueue(destinationName);
 
         logger.info("Creating consumer: {}", destination);
-        javax.jms.MessageConsumer consumer = session.createConsumer(destination);
+        jakarta.jms.MessageConsumer consumer = session.createConsumer(destination);
         consumers.add(consumer);
         subscriptionConsumers.add(consumer);
 
@@ -110,12 +110,12 @@ public class MessageConsumerActiveMQImpl implements CommonMessageConsumer {
   }
 
   private Void process(String subscriberId,
-                       javax.jms.MessageConsumer consumer,
+                       jakarta.jms.MessageConsumer consumer,
                        ActiveMQMessageHandler handler) {
     logger.info("starting processing");
     while (runFlag.get()) {
       try {
-        javax.jms.Message message = consumer.receive(100);
+        jakarta.jms.Message message = consumer.receive(100);
 
         if (message == null) {
           continue;

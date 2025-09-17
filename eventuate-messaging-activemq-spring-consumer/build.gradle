@@ -4,5 +4,8 @@ dependencies {
 
     compile "org.apache.activemq:activemq-core:5.7.0"
 }
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
 
 

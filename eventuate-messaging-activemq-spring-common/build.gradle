@@ -3,5 +3,8 @@ dependencies {
     compile "io.eventuate.common.messaging:eventuate-messaging-partition-management:$eventuateMessagingPartitionManagementVersion"
     compile "org.apache.activemq:activemq-core:5.7.0"
 }
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
 
 

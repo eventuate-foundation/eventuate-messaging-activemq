@@ -42,7 +42,6 @@ subprojects {
     }
 
     dependencies {
-        testCompile "junit:junit:4.12"
     }
 
 
@@ -67,4 +66,7 @@ dockerCompose {
         useComposeFiles = ["docker-compose.yml"]
         removeContainers = project.ext.removeContainers.toBoolean()
     }
+}
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }

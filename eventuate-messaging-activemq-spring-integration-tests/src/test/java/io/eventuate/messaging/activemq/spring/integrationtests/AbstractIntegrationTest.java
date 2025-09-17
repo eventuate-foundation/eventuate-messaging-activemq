@@ -3,8 +3,8 @@ package io.eventuate.messaging.activemq.spring.integrationtests;
 import io.eventuate.messaging.activemq.spring.consumer.MessageConsumerActiveMQImpl;
 import io.eventuate.messaging.activemq.producer.EventuateActiveMQProducer;
 import io.eventuate.util.test.async.Eventually;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -43,8 +43,8 @@ public abstract class AbstractIntegrationTest {
       eventuateActiveMQProducer.send(destination, key, String.valueOf(i));
     }
 
-    Eventually.eventually(() -> Assert.assertEquals(exceptions.get(), 1));
+    Eventually.eventually(() -> Assertions.assertEquals(exceptions.get(), 1));
     Thread.sleep(3000);
-    Assert.assertEquals(exceptions.get(), 1);
+    Assertions.assertEquals(exceptions.get(), 1);
   }
 }

@@ -2,21 +2,18 @@ package io.eventuate.messaging.activemq.spring.integrationtests;
 
 import io.eventuate.messaging.activemq.spring.common.ChannelType;
 import io.eventuate.util.test.async.Eventually;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = QueueTest.Config.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD) //to generate unique topic name for each test
 public class QueueTest extends AbstractIntegrationTest {
@@ -50,7 +47,7 @@ public class QueueTest extends AbstractIntegrationTest {
               concurrentLinkedQueue.add(Integer.parseInt(message.getPayload())));
     }
 
-    Eventually.eventually(() -> Assert.assertEquals(messages, concurrentLinkedQueue.size()));
+    Eventually.eventually(() -> Assertions.assertEquals(messages, concurrentLinkedQueue.size()));
   }
 
   @Test
@@ -72,10 +69,10 @@ public class QueueTest extends AbstractIntegrationTest {
       eventuateActiveMQProducer.send(destination, key, String.valueOf(i));
     }
 
-    Eventually.eventually(() -> Assert.assertEquals(messages, concurrentLinkedQueue.size()));
+    Eventually.eventually(() -> Assertions.assertEquals(messages, concurrentLinkedQueue.size()));
 
     for (int i = 0; i < messages; i++) {
-      Assert.assertEquals(i, (int)concurrentLinkedQueue.poll());
+      Assertions.assertEquals(i, (int)concurrentLinkedQueue.poll());
     }
   }
 }
