@@ -36,12 +36,14 @@ subprojects {
 
     repositories {
         mavenCentral()
-        jcenter()
         maven { url "https://repo.spring.io/milestone" }
         eventuateMavenRepoUrl.split(',').each { repoUrl -> maven { url repoUrl } }
     }
 
     dependencies {
+        testImplementation "org.assertj:assertj-core:$assertjVersion"
+        testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitPlatformLauncherVersion"
     }
 
 
@@ -60,7 +62,6 @@ gradle.projectsEvaluated {
 
 dockerCompose {
     projectName = null
-    environment.put "DOCKER_IMAGE_TAG", dockerImageTag
     publish {
         projectName = null
         useComposeFiles = ["docker-compose.yml"]

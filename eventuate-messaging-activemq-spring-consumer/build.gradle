@@ -1,8 +1,11 @@
 
 dependencies {
-    compile project (":eventuate-messaging-activemq-spring-common")
+    implementation project (":eventuate-messaging-activemq-spring-common")
 
-    compile "org.apache.activemq:activemq-core:5.7.0"
+    implementation "io.eventuate.common.messaging:eventuate-messaging-partition-management:$eventuateMessagingPartitionManagementVersion"
+    implementation "org.springframework.boot:spring-boot-starter:$springBootVersion"
+    implementation "jakarta.jms:jakarta.jms-api:$jakartaJmsApiVersion"
+    implementation "org.apache.activemq:activemq-client-jakarta:$activeMQClientVersion"
 }
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
