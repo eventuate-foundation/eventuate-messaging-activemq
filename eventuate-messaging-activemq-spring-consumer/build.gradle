@@ -1,6 +1,6 @@
 
 dependencies {
-    implementation project (":eventuate-messaging-activemq-spring-common")
+    api project (":eventuate-messaging-activemq-spring-common")
 
     implementation "io.eventuate.common.messaging:eventuate-messaging-partition-management:$eventuateMessagingPartitionManagementVersion"
     implementation "org.springframework.boot:spring-boot-starter:$springBootVersion"
