@@ -4,7 +4,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter:$springBootVersion"
 
     implementation "jakarta.jms:jakarta.jms-api:$jakartaJmsApiVersion"
-    implementation "org.apache.activemq:activemq-client-jakarta:$activeMQClientVersion"
+    implementation "org.apache.activemq:activemq-client:$activeMQClientVersion"
 }
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
