@@ -1,12 +1,13 @@
 
 dependencies {
-    implementation project(":eventuate-messaging-activemq-spring-common")
-    implementation project(":eventuate-messaging-activemq-spring-consumer")
-    implementation project(":eventuate-messaging-activemq-spring-producer")
+    testImplementation project(":eventuate-messaging-activemq-spring-common")
+    testImplementation project(":eventuate-messaging-activemq-spring-consumer")
+    testImplementation project(":eventuate-messaging-activemq-spring-producer")
 
-    implementation "io.eventuate.common.messaging:eventuate-messaging-partition-management:$eventuateMessagingPartitionManagementVersion"
+    testImplementation "io.eventuate.common.messaging:eventuate-messaging-partition-management:$eventuateMessagingPartitionManagementVersion"
+    testImplementation "org.springframework.boot:spring-boot-starter:$springBootVersion"
     testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
-    implementation "io.eventuate.util:eventuate-util-test:$eventuateUtilVersion"
+    testImplementation "io.eventuate.util:eventuate-util-test:$eventuateUtilVersion"
 }
 
 test {
